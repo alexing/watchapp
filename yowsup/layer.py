@@ -38,9 +38,9 @@ class EchoLayer(YowInterfaceLayer):
             #TODO: GET USER NAMES!
             if messageProtocolEntity.getType() == 'text': #our group's id
                 print("""
-                %s said:
+                %s (%s) said:
                 %s
-                """%(messageProtocolEntity.getParticipant(), messageProtocolEntity.body))
+                """%(messageProtocolEntity.getNotify(), messageProtocolEntity.getParticipant(), messageProtocolEntity.body))
             else:
                 print("""
                 %s sent a non text message
@@ -53,7 +53,7 @@ class EchoLayer(YowInterfaceLayer):
 
     @ProtocolEntityCallback("receipt")
     def onReceipt(self, entity):
-        print(entity.ack())
+        #print(entity.ack())
         self.toLower(entity.ack())
 
     def onTextMessage(self,messageProtocolEntity):
