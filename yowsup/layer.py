@@ -8,6 +8,8 @@ from yowsup.layers.protocol_presence.protocolentities  import UnavailablePresenc
 from yowsup.layers.protocol_presence.protocolentities  import PresenceProtocolEntity            #Name presence
 from yowsup.layers.protocol_chatstate.protocolentities import OutgoingChatstateProtocolEntity   #is writing, writing pause
 from yowsup.common.tools                               import Jid                               #is writing, writing pause
+import urllib.request
+import re
 
 #Log, but only creates the file and writes only if you kill by hand from the console (CTRL + C)
 #import sys
@@ -28,11 +30,17 @@ ap = set(allowedPersons)
 
 name = "NAMEPRESENCE"
 filelog = "/root/.yowsup/Not allowed.log"
+SERVER_URL = "https://thawing-tundra-47662.herokuapp.com/sentence/"
+
+def cleanhtml(raw_html):
+  cleanr = re.compile('<.*?>')
+  cleantext = re.sub(cleanr, '', raw_html)
+  return cleantext
 
 class EchoLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def onMessage(self, messageProtocolEntity):
-        if messageProtocolEntity.getFrom() == '972526536533-1516886955@g.us':
+        if messageProtocolEntity.getFrom() == '972526536533-1516886955@g.us': # test just in our group
             #TODO: THIS JUST FILTER IMAGES
             #TODO: STOP THOSE FUCKING LOG MESSAGES!
             #TODO: GET USER NAMES!
@@ -41,6 +49,9 @@ class EchoLayer(YowInterfaceLayer):
                 %s (%s) said:
                 %s
                 """%(messageProtocolEntity.getNotify(), messageProtocolEntity.getParticipant(), messageProtocolEntity.body))
+                string_url = SERVER_URL + '?sentence=' + messageProtocolEntity.body.replace(" ", "_") + '&user=' + messageProtocolEntity.getParticipant()
+                r = urllib.request.urlopen(string_url).read().decode("utf-8")
+                print(cleanhtml(r))
             else:
                 print("""
                 %s sent a non text message
