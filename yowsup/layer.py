@@ -60,8 +60,9 @@ class EchoLayer(YowInterfaceLayer):
                 #string_url = SERVER_URL + '?sentence=' + messageProtocolEntity.body.replace(" ", "_") + '&user=' + messageProtocolEntity.getParticipant()
                 #r = urllib.request.urlopen(string_url).read().decode("utf-8")
                 #print(cleanhtml(r))
-                bullyied = predict(messageProtocolEntity.body)[0]
-                prob = predict(messageProtocolEntity.body)[1]
+                prediction =  predict(messageProtocolEntity.body.replace(' ', '_'))
+                bullyied = prediction[0]
+                prob = prediction[1]
                 if bullyied:
                     print("%s is bullying. Probability: %.03f %%" % (messageProtocolEntity.body, prob))
 

@@ -8,8 +8,8 @@ from yowsup.layers.network                     import YowNetworkLayer
 from yowsup.env                                import YowsupEnv
 from credentials import wp_user, wp_pass
 #Uncomment to log
-#import logging
-#logging.basicConfig(level=logging.DEBUG)
+import logging
+logging.basicConfig(level=logging.CRITICAL)
 
 CREDENTIALS = (wp_user, wp_pass) #replace with your phone and password
 
