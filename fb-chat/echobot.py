@@ -1,6 +1,7 @@
 # -*- coding: UTF-8 -*-
 
 from fbchat import log, Client
+from credentials import fb_user, fb_pass
 
 # Subclass fbchat.Client and override required methods
 class EchoBot(Client):
@@ -14,5 +15,5 @@ class EchoBot(Client):
         if author_id != self.uid:
             self.send(message_object, thread_id=thread_id, thread_type=thread_type)
 
-client = EchoBot("alexing10@gmail.com", "")
+client = EchoBot(fb_user, fb_pass)
 client.listen()

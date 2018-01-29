@@ -6,20 +6,12 @@ from yowsup.layers.auth                        import YowAuthenticationProtocolL
 from yowsup.layers.coder                       import YowCoderLayer
 from yowsup.layers.network                     import YowNetworkLayer
 from yowsup.env                                import YowsupEnv
-
+from credentials import wp_user, wp_pass
 #Uncomment to log
 #import logging
 #logging.basicConfig(level=logging.DEBUG)
 
-CREDENTIALS = ("972547891485", "Gc8itFtUorUsJKm+F+Q/3Kl2Aj0=") #replace with your phone and password
-#alexx
-#login: b'972585396433'
-#pw: b'/VLmO0ZjyqCpFLJtF7Z4DJcBVMM='
-#itai
-#login: b'972526536533'
-#pw: b'/qZFcnNqkvUzrrpeouSD5v3nevE='
-# login: b'972547891485'
-# pw: b'Gc8itFtUorUsJKm+F+Q/3Kl2Aj0='
+CREDENTIALS = (wp_user, wp_pass) #replace with your phone and password
 
 if __name__==  "__main__":
     stackBuilder = YowStackBuilder()
