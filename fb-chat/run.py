@@ -1,10 +1,11 @@
 # -*- coding: UTF-8 -*-
 
 from fbchat import log, Client
-import requests
+import urllib.request
 import re
 from credentials import fb_user, fb_pass
-import dill, json
+import dill
+import logging
 
 
 SERVER_URL = "https://thawing-tundra-47662.herokuapp.com/sentence/"
@@ -21,8 +22,6 @@ with open('../model.pickle', 'rb') as f:
 def predict(msg):
     return model.predict(msg)[0], model.prob_to_bully[0]
 
-data = {}
-key = 0
 
 # Subclass fbchat.Client and override required methods
 class EchoBot(Client):
@@ -39,21 +38,14 @@ class EchoBot(Client):
             #r = urllib.request.urlopen(string_url).read().decode("utf-8")
             print("%s sent '%s'" % (name, message_object.text))
             #print(cleanhtml(r))
-            bullyied = predict(message_object.text)[0]
-            prob = predict(message_object.text)[1]
+            prediction = predict(message_object.text.replace(" ", "_"))
+            bullyied = prediction[0]
+
+            prob = prediction[1]
             if bullyied:
-                print("%s is bullying. Probability: %.03f %%" % (message_object.text, prob))
+                print("%s is bullying. Probability: %.03f" % (message_object.text, prob))
 
-            data[key] = {
-                'user': name,
-                'message': message_object.text,
-                'prediction': bullyied,
-                'prob': prob
-            }
-            key = key + 1
-            json_data = json.dumps(data)
-            r = requests.get('localhost', data=json_data)
-            print(r)
-
-client = EchoBot(fb_user, fb_pass)
+client = EchoBot(fb_user, fb_pass, logging_level=logging.CRITICAL)
+print("Logging in...")
+print("Listening...")
 client.listen()
