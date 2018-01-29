@@ -40,7 +40,7 @@ class EchoBot(Client):
             bullyied = predict(message_object.text)[0]
             prob = predict(message_object.text)[1]
             if bullyied:
-                print("%s is bullying. Probability: %.03f" % (message_object.text, prob))
+                print("%s is bullying. Probability: %.03f %%" % (message_object.text, prob))
 
 client = EchoBot(fb_user, fb_pass)
 client.listen()

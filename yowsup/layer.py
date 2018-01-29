@@ -10,7 +10,7 @@ from yowsup.layers.protocol_chatstate.protocolentities import OutgoingChatstateP
 from yowsup.common.tools                               import Jid                               #is writing, writing pause
 import urllib.request
 import re
-
+import dill
 #Log, but only creates the file and writes only if you kill by hand from the console (CTRL + C)
 #import sys
 #class Logger(object):
@@ -37,6 +37,14 @@ def cleanhtml(raw_html):
   cleantext = re.sub(cleanr, '', raw_html)
   return cleantext
 
+with open('../model.pickle', 'rb') as f:
+    model = dill.load(f)
+
+def predict(msg):
+    return model.predict(msg)[0], model.prob_to_bully[0]
+
+
+
 class EchoLayer(YowInterfaceLayer):
     @ProtocolEntityCallback("message")
     def onMessage(self, messageProtocolEntity):
@@ -49,9 +57,14 @@ class EchoLayer(YowInterfaceLayer):
                 %s (%s) said:
                 %s
                 """%(messageProtocolEntity.getNotify(), messageProtocolEntity.getParticipant(), messageProtocolEntity.body))
-                string_url = SERVER_URL + '?sentence=' + messageProtocolEntity.body.replace(" ", "_") + '&user=' + messageProtocolEntity.getParticipant()
-                r = urllib.request.urlopen(string_url).read().decode("utf-8")
-                print(cleanhtml(r))
+                #string_url = SERVER_URL + '?sentence=' + messageProtocolEntity.body.replace(" ", "_") + '&user=' + messageProtocolEntity.getParticipant()
+                #r = urllib.request.urlopen(string_url).read().decode("utf-8")
+                #print(cleanhtml(r))
+                bullyied = predict(messageProtocolEntity.body)[0]
+                prob = predict(messageProtocolEntity.body)[1]
+                if bullyied:
+                    print("%s is bullying. Probability: %.03f %%" % (messageProtocolEntity.body, prob))
+
             else:
                 print("""
                 %s sent a non text message

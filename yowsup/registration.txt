@@ -1,3 +1,3 @@
-yowsup-cli registration --cc 972 --phone 972585396433 --requestcode sms --mcc 425
-yowsup-cli registration --cc 972 --phone 972585396433 --register CODE --mcc 425
+yowsup-cli registration --cc 972 --phone 972586766356 --requestcode sms --mcc 425
+yowsup-cli registration --cc 972 --phone 972586766356 --register 347-412 --mcc 425
 
