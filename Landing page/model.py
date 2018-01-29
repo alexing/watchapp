@@ -5,10 +5,13 @@ from sys import argv
 import pandas as pd
 import numpy as np
 import dill, json
+import time
 
 from sklearn.metrics import roc_curve
 # app = Flask(__name__)
 
+
+dic = {[]}
 
 model = None
 with open(r'model.pickle', 'rb') as file:
@@ -37,6 +40,13 @@ def images(filename):
     return static_file(filename, root='images')
 
 
+@route('/sentence_get/', methods=['GET'])
+def send_dict_to_front_end():
+    content = dic[0]
+    dic = {[]}
+    return json.dumps(content)
+
+
 @route('/sentence/', methods=['GET'])
 def bully_predictor():
     # arg_dict = request.args.to_dict()
@@ -45,23 +55,21 @@ def bully_predictor():
     sentence = arg_dict['sentence'][0]
     user = arg_dict['user'][0]
 
-    res = '<html><head>'
     clf = get_model()
     prediction = clf.predict(sentence)[0]
     prob = clf.prob_to_bully[0]
-    res += '<p>The sentence "' + \
-           sentence.replace('_', ' ') + \
-           '" is bully: ' +str(prediction) + \
-    ' with prob: ' + str(prob) + \
-    '<br></>'
-    res += '</><ERITY/: >'
-    return json.dumps({"STATUS":str(prediction), "MSG":sentence, "USER":user, "SEVERITY": prob})
+    if prediction:
+        dic[0].append({'prediction': prediction, 'prob': prob})
 
 
 def main(host="0.0.0.0", port=None):
     if not port:
         port = argv[1]
     run(host=host, port=port)
+
+    while True:
+        time.sleep(0.5)
+        bully_predictor()
 
 if __name__ == '__main__':
     main(host="localhost", port=7000)  # run on localhost
