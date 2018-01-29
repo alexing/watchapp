@@ -1,40 +1,68 @@
-from flask import Flask
-from flask import request
+# from flask import Flask
+# from flask import request
+from bottle import route, template, static_file, run, request
+from sys import argv
 import pandas as pd
 import numpy as np
-import dill,json
+import dill, json
 
 from sklearn.metrics import roc_curve
-app = Flask(__name__)
+# app = Flask(__name__)
+
+
+model = None
+with open(r'model.pickle', 'rb') as file:
+    model = dill.load(file)
 
 
 def get_model():
-    model_file_path = r'model.pickle'
-    with open(model_file_path, 'rb') as file:
-        model = dill.load(file)
-    return (model)
+    return model
 
 
-@app.route('/sentence/', methods=['GET'])
+@route('/', method='GET')
+def index():
+    return template("watchApp_index.html")
+
+@route('/js/<filename:re:.*\.js>', method='GET')
+def javascripts(filename):
+    return static_file(filename, root='js')
+
+@route('/css/<filename:re:.*\.css>', method='GET')
+def stylesheets(filename):
+    return static_file(filename, root='css')
+
+
+@route('/images/<filename:re:.*\.(jpg|png|gif|ico)>', method='GET')
+def images(filename):
+    return static_file(filename, root='images')
+
+
+@route('/sentence/', methods=['GET'])
 def bully_predictor():
-    arg_dict = request.args.to_dict()
+    # arg_dict = request.args.to_dict()
+    arg_dict = request.query.dict
     print (str(arg_dict))
-    sentence = arg_dict['sentence']
-    user = arg_dict['user']
+    sentence = arg_dict['sentence'][0]
+    user = arg_dict['user'][0]
 
     res = '<html><head>'
     clf = get_model()
-    prediction = clf.predict(sentence)
-    prob = str(clf.prob_to_bully)
+    prediction = clf.predict(sentence)[0]
+    prob = clf.prob_to_bully[0]
     res += '<p>The sentence "' + \
            sentence.replace('_', ' ') + \
            '" is bully: ' +str(prediction) + \
-    ' with prob: ' + prob + \
+    ' with prob: ' + str(prob) + \
     '<br></>'
     res += '</><ERITY/: >'
     return json.dumps({"STATUS":str(prediction), "MSG":sentence, "USER":user, "SEVERITY": prob})
 
+
+def main(host="0.0.0.0", port=None):
+    if not port:
+        port = argv[1]
+    run(host=host, port=port)
+
 if __name__ == '__main__':
-    app.run()
-
-
+    main(host="localhost", port=7000)  # run on localhost
+    #main()
